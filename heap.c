@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-struct hash {
+struct heap {
     void** datos;
     size_t cant;
     size_t tam;
