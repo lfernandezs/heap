@@ -91,7 +91,7 @@ void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
     heap_t* heap = heap_crear_arr(elementos, cant, cmp);
     if (!heap) return NULL;
     for(size_t i = cant - 1; i >= 0; i--){
-        elementos[i] = heap_desencolar(heap);
+        heap_desencolar(heap);
     }
     heap_destruir(heap, NULL);
 }
