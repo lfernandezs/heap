@@ -3,7 +3,7 @@
 #define TAM_I 31
 
 /* Definición del struct heap */
-struct hash {
+struct heap {
     void** datos;
     size_t cant;
     size_t tam;
