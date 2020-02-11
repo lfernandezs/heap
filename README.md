@@ -1,2 +1,2 @@
-# heap
+# Heap
 Cola de prioridad
