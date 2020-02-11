@@ -18,7 +18,7 @@ void upheap(void** arreglo, size_t pos, cmp_func_t cmp);
 void downheap(void** arreglo, size_t tam, size_t pos, cmp_func_t cmp);
 void swap(void** arreglo, size_t pos1, size_t pos2);
 bool redimensionar(heap_t* heap, size_t tam);
-heap_t* heapify(void *arreglo[], size_t n, cmp_func_t cmp);
+void heapify(void *arreglo[], size_t n, cmp_func_t cmp);
 
 /* Primitivas del heap */
 heap_t *heap_crear(cmp_func_t cmp) {
@@ -60,9 +60,7 @@ void *heap_ver_max(const heap_t* heap) {
 
 void *heap_desencolar(heap_t* heap) {
     if (heap->cant == 0) return NULL;
-    if (heap->cant <= heap->tam / 4) {
-        if (!redimensionar(heap, heap->tam / FACTOR_REDIMENSIONAR)) return false;
-    }
+    if (heap->cant <= heap->tam / 4) redimensionar(heap, heap->tam / FACTOR_REDIMENSIONAR);
     void* dato = heap->datos[0];
     heap->datos[0] = heap->datos[heap->cant-1];
     downheap(heap->datos, heap->cant, 0, heap->cmp);
@@ -77,19 +75,28 @@ void heap_destruir(heap_t* heap, void f(void* e)) {
 }
 
 heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp) {
-    return heapify(arreglo, n, cmp);
+    heapify(arreglo, n, cmp);
+    heap_t* heap = malloc(sizeof(heap_t));
+    if (!heap) return NULL;
+    heap->datos = malloc(sizeof(void*) * n);
+    if (!heap->datos) {
+        free(heap);
+        return NULL;
+    }
+    for (size_t i = 0; i < n; i ++) heap->datos[i] = arreglo[i];
+    heap->cant = n;
+    heap->tam = n;
+    heap->cmp = cmp;
+    return heap;
 }
 
 /* Heapsort */
-void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp){
-    heap_t* heap = heapify(elementos, cant, cmp);
-    if (!heap) return;
-    for(size_t i = heap->cant - 1; i > 0; i--) {
-        swap(heap->datos, 0, i);
-        downheap(heap->datos, i, 0, heap->cmp);
+void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
+    heapify(elementos, cant, cmp);
+    for(size_t i = cant - 1; i > 0; i--) {
+        swap(elementos, 0, i);
+        downheap(elementos, i, 0, cmp);
     }
-    for (int i = 0; i < cant; i++) elementos[i] = heap->datos[i];
-    heap_destruir(heap, NULL);
 }
 
 /* Funciones auxiliares */
@@ -129,14 +136,6 @@ bool redimensionar(heap_t* heap, size_t tam_nuevo) {
     return true;
 }
 
-heap_t* heapify(void *arreglo[], size_t n, cmp_func_t cmp){
-    heap_t* heap = heap_crear(cmp);
-    if(!heap) return NULL; 
-    if (n >= TAM_I) if (!redimensionar(heap, n)) return NULL;
-    for(size_t i = 0; i < n; i++){
-        heap->datos[i] = arreglo[i];
-        heap->cant++;
-    }
-    for(int i = (int)(heap->cant/2) - 1; i >= 0 ; i--) downheap(heap->datos, heap->cant, i, heap->cmp);
-    return heap;
+void heapify(void *arreglo[], size_t n, cmp_func_t cmp) {
+    for(int i = (int)(n/2) + 1; i >= 0 ; i--) downheap(arreglo, n, i, cmp);
 }  

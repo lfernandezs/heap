@@ -187,6 +187,7 @@ void prueba_heap_sort() {
 	void* arreglo[5] = {&d, &e, &c, &a, &b};
 
 	/* Inicio de pruebas */
+    printf("\nPRUEBAS HEAPSORT\n");
 	heap_sort(arreglo, 5, comparar_numeros);
 	for (int i = 0; i < 5; i++) if (*(int*)arreglo[i] != i+1) prueba = -1;
 	print_test("El arreglo esta ordenado", prueba == 0);
